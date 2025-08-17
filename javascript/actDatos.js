@@ -1,52 +1,60 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const btnEditar = document.querySelectorAll('.btn-outline-warning'); // Coincide con el HTML
-    const modal = new bootstrap.Modal(document.getElementById('userModal'));
+    const btnEditar = document.querySelectorAll('.btn-outline-warning');
+    const modalElement = document.getElementById('userModal');
+    const modal = new bootstrap.Modal(modalElement);
     const modalTitle = document.getElementById('userModalTitle');
     const form = document.getElementById('userForm');
     const passwordInput = document.getElementById('password');
-    const cedulaInput = document.getElementById('cedula');
-    const usuarioInput = document.getElementById('usuario');
 
     btnEditar.forEach(btn => {
         btn.addEventListener('click', function () {
-            const id = this.getAttribute('data-id');
-            const identificacion = this.getAttribute('data-identificacion');
-            const apellidos = this.getAttribute('data-apellidos');
-            const nombre = this.getAttribute('data-nombre');
-            const telefonop = this.getAttribute('data-telefonop');
-            const direccion = this.getAttribute('data-direccion');
-            const email = this.getAttribute('data-email');
-            const lugart = this.getAttribute('data-lugart');
-            const direcciont = this.getAttribute('data-direcciont');
-            const telefonot = this.getAttribute('data-telefonot');
-            const usuario = this.getAttribute('data-usuario');
-
             modalTitle.textContent = 'Editar Usuario';
 
-            document.getElementById('userId').value = id;
-            document.getElementById('cedula').value = identificacion;
-            document.getElementById('apellidos').value = apellidos;
-            document.getElementById('nombre').value = nombre;
-            document.getElementById('telefonop').value = telefonop;
-            document.getElementById('direccion').value = direccion;
-            document.getElementById('email').value = email;
-            document.getElementById('lugart').value = lugart;
-            document.getElementById('direcciont').value = direcciont;
-            document.getElementById('telefonot').value = telefonot;
-            document.getElementById('usuario').value = usuario;
+            document.getElementById('userId').value = this.dataset.id;
+            document.getElementById('cedula').value = this.dataset.identificacion;
+            document.getElementById('apellidos').value = this.dataset.apellidos;
+            document.getElementById('nombre').value = this.dataset.nombre;
+            document.getElementById('telefonop').value = this.dataset.telefonop;
+            document.getElementById('direccion').value = this.dataset.direccion;
+            document.getElementById('email').value = this.dataset.email;
+            document.getElementById('lugart').value = this.dataset.lugart;
+            document.getElementById('direcciont').value = this.dataset.direcciont;
+            document.getElementById('telefonot').value = this.dataset.telefonot;
+            document.getElementById('usuario').value = this.dataset.usuario;
 
             document.getElementById('password').value = '';
-
             passwordInput.removeAttribute('required');
 
             modal.show();
         });
     });
 
-    document.getElementById('userModal').addEventListener('hidden.bs.modal', () => {
+    modalElement.addEventListener('hidden.bs.modal', () => {
         form.reset();
         document.getElementById('userId').value = '';
-        modalTitle.textContent = 'Agregar Usuario';
+        modalTitle.textContent = 'Editar Usuario';
         passwordInput.setAttribute('required', true);
     });
+
+    // Activar botón de eliminar
+    document.querySelectorAll('.eliminar-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            const userId = this.dataset.id;
+
+            Swal.fire({
+                title: '¿Eliminar usuario?',
+                text: 'Esta acción no se puede deshacer.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, eliminar',
+                cancelButtonText: 'Cancelar'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    window.location.href = `actualizarDatos.php?delete=${userId}`;
+                }
+            });
+        });
+    });
 });
+

@@ -1,0 +1,21 @@
+Programas necesarios:
+    Visual Studio
+    Xampp (con las extensiones de apache instalado)
+    MySQL
+    Navegador (Google Chrome, Mozilla Firefox, Microsoft Edge, Brave, etc)
+
+Una vez con los programas necesarios, mover la carpeta CasoEstudio2 dentro la siguiente ruta en el explorador de archivos
+Ruta: C:\xampp\htdocs 
+
+Pasos en MySql:
+    Abrir desde el MySQL el archivo "BaseDatos" que contendra una serie de instrucciones para crear la base de datos.
+    Subrayar desde la linea uno hasta la ultima y darle al icono del rayo, con esto estamos creando la base de datos, tablas e introduciendo datos
+
+Pasos en el Visual Studio:
+    En la parte superior izquierda, dar clic en archivo, luego abrir folder y localizar la siguiente ruta "C:\xampp\htdocs\CasoEstudio2" con el fin de abrir nuestro proyecto
+
+Pasos en el Navegador
+    Pega el hipervinculo "https://localhost/PHP/CasoEstudio2/" y dale enter para ingresar a la página de finazas seguras
+    Usa el usuario de prueba 123 con la contraseña 123 o bien tienes la opción de registrarte
+
+    Dentro de esta página tienes opciones de editar los usuarios en la pestaña "Actualizar Datos" o puedes reportar el pago de prestamos en "Reportar Pagos"

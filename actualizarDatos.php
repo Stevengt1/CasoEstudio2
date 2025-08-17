@@ -6,6 +6,18 @@ if (!isset($_SESSION['nombre'])) {
 } else {
     require_once 'include/conexion.php';
 
+    // Eliminar usuario si se recibe ?delete=id
+    if (isset($_GET['delete'])) {
+        $idEliminar = intval($_GET['delete']);
+        $stmt = $mysqli->prepare("DELETE FROM clientes WHERE id_cliente = ?");
+        $stmt->bind_param("i", $idEliminar);
+        $stmt->execute();
+        $stmt->close();
+        header("Location: actualizarDatos.php");
+        exit();
+    }
+
+    // Obtener usuarios
     $usuarios_data = [];
     $resultado = $mysqli->query("SELECT id_cliente, identificacion, apellidos, nombre, telefono_personal, direccion_personal, email, lugar_trabajo, direccion_trabajo, telefono_trabajo, usuario FROM clientes");
     if ($resultado && $resultado->num_rows > 0) {
@@ -15,8 +27,13 @@ if (!isset($_SESSION['nombre'])) {
     }
     $resultado->close();
 
+    // Procesar edición
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $userId        = $_POST['userId'];
+        if (empty($userId)) {
+            exit("No está permitido agregar nuevos usuarios.");
+        }
+
         $identificacion = trim($_POST['cedula']);
         $apellidos     = $_POST['apellidos'];
         $nombre        = $_POST['nombre'];
@@ -28,38 +45,25 @@ if (!isset($_SESSION['nombre'])) {
         $telefonot     = $_POST['telefonot'];
         $usuario       = strtolower(trim($_POST['usuario']));
         $password      = $_POST['password'];
-        $mensaje       = "";
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $mensaje = "Email inválido";
-            exit();
+            exit("Email inválido");
         }
 
         $passwordHash = !empty($password) ? password_hash($password, PASSWORD_DEFAULT) : null;
 
-        if (!empty($userId)) {
-            if (!empty($password)) {
-                $sql = "UPDATE clientes SET identificacion=?, apellidos=?, nombre=?, telefono_personal=?, direccion_personal=?, email=?, lugar_trabajo=?, direccion_trabajo=?, telefono_trabajo=?, usuario=?, contrasena=? WHERE id_cliente=?";
-                $stmt = $mysqli->prepare($sql);
-                $stmt->bind_param("ssssssssssssi", $identificacion, $apellidos, $nombre, $telefonop, $direccion, $email, $lugart, $direcciont, $telefonot, $usuario, $passwordHash, $userId);
-            } else {
-                $sql = "UPDATE clientes SET identificacion=?, apellidos=?, nombre=?, telefono_personal=?, direccion_personal=?, email=?, lugar_trabajo=?, direccion_trabajo=?, telefono_trabajo=?, usuario=? WHERE id_cliente=?";
-                $stmt = $mysqli->prepare($sql);
-                $stmt->bind_param("ssssssssssi", $identificacion, $apellidos, $nombre, $telefonop, $direccion, $email, $lugart, $direcciont, $telefonot, $usuario, $userId);
-            }
-
-            $stmt->execute();
-            $mensaje = ($stmt->affected_rows > 0) ? "Datos actualizados correctamente" : "No se realizaron cambios";
-            $stmt->close();
-        } else {
-            $sql = "INSERT INTO clientes (identificacion, apellidos, nombre, telefono_personal, direccion_personal, email, lugar_trabajo, direccion_trabajo, telefono_trabajo, usuario, contrasena) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        if (!empty($password)) {
+            $sql = "UPDATE clientes SET identificacion=?, apellidos=?, nombre=?, telefono_personal=?, direccion_personal=?, email=?, lugar_trabajo=?, direccion_trabajo=?, telefono_trabajo=?, usuario=?, contrasena=? WHERE id_cliente=?";
             $stmt = $mysqli->prepare($sql);
-            $stmt->bind_param("sssssssssss", $identificacion, $apellidos, $nombre, $telefonop, $direccion, $email, $lugart, $direcciont, $telefonot, $usuario, $passwordHash);
-            $stmt->execute();
-            $mensaje = ($stmt->affected_rows > 0) ? "Datos creados correctamente" : "No creó ningún usuario";
-            $stmt->close();
+            $stmt->bind_param("ssssssssssssi", $identificacion, $apellidos, $nombre, $telefonop, $direccion, $email, $lugart, $direcciont, $telefonot, $usuario, $passwordHash, $userId);
+        } else {
+            $sql = "UPDATE clientes SET identificacion=?, apellidos=?, nombre=?, telefono_personal=?, direccion_personal=?, email=?, lugar_trabajo=?, direccion_trabajo=?, telefono_trabajo=?, usuario=? WHERE id_cliente=?";
+            $stmt = $mysqli->prepare($sql);
+            $stmt->bind_param("ssssssssssi", $identificacion, $apellidos, $nombre, $telefonop, $direccion, $email, $lugart, $direcciont, $telefonot, $usuario, $userId);
         }
 
+        $stmt->execute();
+        $stmt->close();
         $mysqli->close();
         header("Location:" . $_SERVER['PHP_SELF']);
         exit();
@@ -92,9 +96,8 @@ if (!isset($_SESSION['nombre'])) {
             <?php include 'include/navBar.php' ?>
         </header>
         <main>
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="mb-3">
                 <h2 class="m-2">Actualización de datos</h2>
-                <button class="btn btn-outline-success m-2" id="btnAgregar" data-bs-toggle="modal" data-bs-target="#userModal">Agregar Usuario</button>
             </div>
             <section class="container-fluid mt-4">
                 <table class="table table-bordered table-striped" id="tablaUsuarios">
@@ -156,7 +159,7 @@ if (!isset($_SESSION['nombre'])) {
                 <form id="userForm" method="POST" action="">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h4 class="modal-title" id="userModalTitle">Agregar Usuario</h4>
+                            <h4 class="modal-title" id="userModalTitle">Editar Usuario</h4>
                         </div>
                         <div class="modal-body">
                             <input id="userId" type="hidden" name="userId">
