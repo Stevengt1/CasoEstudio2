@@ -1,0 +1,31 @@
+body {
+    margin: 0;
+    font-family: Arial;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.card {
+    padding: 10px 5px 10px 5px;
+    border-radius: 10px;
+    border: 1px solid black;
+    max-width: 600px;
+    height: auto;
+    margin: 10px auto;
+}
+
+label {
+    font-weight: bold;
+}
+
+input {
+    border-radius: 10px;
+    border: 1px solid black;
+}
+
+.card-header {
+    background-color: #1C6EA4;
+    color: white;
+    font-weight: bold;
+}
